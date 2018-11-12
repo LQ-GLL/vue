@@ -10,33 +10,43 @@
 </template>
 
 <script>
+  //类型为函数
+  //三点运算符是用来干嘛的?打包  解包
+
+  import{mapState, mapGetters, mapActions} from 'vuex'
   export default {
-    data () {
-      return {
-        //用vuex来管理这个count状态
-        count: 0
-      }
+    computed: {
+      ...mapState(['count']),//对象里有个方法count（）
+      ...mapGetters(['evenOrOdd']),
     },
-    //写四个事件回调函数，view触发的事件
     methods: {
-      increment () {
-        //这个方法的功能
-        this.count++
-      },
-      decrement () {
-        this.count--
-      },
-      incrementIfOdd () {
-        if (this.count % 2 === 1) {
-          this.count++
-        }
-      },
-      incrementAsync () {
-        setTimeout(() => {
-          this.count++
-        },500)
-      },
+      ...mapActions(['increment', 'decrement', 'incrementIfOdd', 'incrementAsync'])
     }
+    //写四个事件回调函数，view触发的事件
+//    methods: {
+//      //运用vuex，这里通知vuex更新
+//      increment () {
+//       //这个方法的功能
+//       //this.count++
+//        this.$store.dispatch('increment')
+//      },
+//      decrement () {
+////        this.count--
+//        this.$store.dispatch('decrement')
+//      },
+//      incrementIfOdd () {
+////        if (this.count % 2 === 1) {
+////          this.count++
+////        }
+//        this.$store.dispatch('incrementIfOdd')
+//      },
+//      incrementAsync () {
+////        setTimeout(() => {
+////          this.count++
+////        },500)
+//        this.$store.dispatch('incrementAsync')
+//      },
+//    }
   }
 </script>
 
