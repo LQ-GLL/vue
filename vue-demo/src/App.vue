@@ -1,54 +1,83 @@
 <template>
-  <div>
-                                     <!--计算属性（根据count来决定-->
-    <p>click {{count}} times count is {{evenOrOdd}}</p>
-    <button @click="increment">+</button>
-    <button @click="decrement">-</button>
-    <button @click="incrementIfOdd">increment if odd</button>
-    <button @click="incrementAsync">increment async</button>
+  <div class="todo-container">
+    <div class="todo-wrap">
+      <TodoHeader :addTodo="addTodo"/>
+      <TodoMain :todos="todos" :deleteTodo="deleteTodo"/>
+      <TodoFooter :todos="todos"
+                  :deleteCompleteTodos="deleteCompleteTodos"
+                  :selectAllTodos="selectAllTodos"/>
+    </div>
   </div>
 </template>
 
 <script>
-  //类型为函数
-  //三点运算符是用来干嘛的?打包  解包
+  import Header from './components/Header.vue'
+  import Main from './components/Main.vue'
+  import Footer from './components/Footer.vue'
+  import storageUtils from './utils/storageUtils'
 
-  import{mapState, mapGetters, mapActions} from 'vuex'
   export default {
-    computed: {
-      ...mapState(['count']),//对象里有个方法count（）
-      ...mapGetters(['evenOrOdd']),
+
+    data () {
+      return {
+        todos: storageUtils.readTodos()
+      }
     },
+
     methods: {
-      ...mapActions(['increment', 'decrement', 'incrementIfOdd', 'incrementAsync'])
+      // 添加todo
+      addTodo (todo) {
+        this.todos.unshift(todo)
+      },
+
+      // 删除指定下标的todo
+      deleteTodo (index) {
+        this.todos.splice(index, 1)
+      },
+
+      // 删除已完成的todo
+      deleteCompleteTodos () {
+        this.todos = this.todos.filter(todo => !todo.complete)
+      },
+
+      // 全选或全不选所有todo
+      selectAllTodos (isCheck) {
+        this.todos.forEach(todo => todo.complete = isCheck)
+      }
+
+    },
+
+    watch: {
+      todos: {
+        deep: true, // 深度监视
+        /*handler: function (value) {// todos最新的值
+          // 保存todos的json数据到localStorage
+          //localStorage.setItem('todos_key', JSON.stringify(value))
+          storageUtils.saveTodos(value)
+        }*/
+       handler: storageUtils.saveTodos
+        /*handler: function (todos) {
+          localStorage.setItem(TODOS_KEY, JSON.stringify(todos))
+        }*/
+      }
+    },
+
+    components: {
+      TodoHeader: Header,
+      TodoMain: Main,
+      TodoFooter: Footer,
     }
-    //写四个事件回调函数，view触发的事件
-//    methods: {
-//      //运用vuex，这里通知vuex更新
-//      increment () {
-//       //这个方法的功能
-//       //this.count++
-//        this.$store.dispatch('increment')
-//      },
-//      decrement () {
-////        this.count--
-//        this.$store.dispatch('decrement')
-//      },
-//      incrementIfOdd () {
-////        if (this.count % 2 === 1) {
-////          this.count++
-////        }
-//        this.$store.dispatch('incrementIfOdd')
-//      },
-//      incrementAsync () {
-////        setTimeout(() => {
-////          this.count++
-////        },500)
-//        this.$store.dispatch('incrementAsync')
-//      },
-//    }
   }
 </script>
 
 <style>
+  .todo-container {
+    width: 600px;
+    margin: 0 auto;
+  }
+  .todo-container .todo-wrap {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
 </style>
